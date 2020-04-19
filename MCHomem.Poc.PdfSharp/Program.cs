@@ -3,18 +3,27 @@ using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
 using System;
+using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace MCHomem.Poc.PdfSharp
 {
     class Program
     {
+        #region Main method
+
         static void Main(string[] args)
         {
+            Console.Title = "PDF Sharp tests";
             ShowMenu();
             Console.ReadKey();
         }
+
+        #endregion
+
+        #region Static methods
 
         private static void ShowMenu()
         {
@@ -22,38 +31,45 @@ namespace MCHomem.Poc.PdfSharp
             {
                 Console.Clear();
                 Console.WriteLine("Menu\r\n");
-                Console.WriteLine("1 - Hello Word");
-                Console.WriteLine("2 - Box");
-                Console.WriteLine("3 - Box, inner word and paper orientation");
-                Console.WriteLine("4 - Create PDF with long text");
-                Console.WriteLine("5 - Report layout");
-                Console.WriteLine("6 - Online samples");
-                Console.WriteLine("0 - Exit\r\n");
-
+                ShowMessage(MessageType.INFORMATION, "\tChoose a number from below menu to create a pdf file\r\n\tand show in default browser:\r\n", false);
+                Console.WriteLine("\t1 - Hello Word.");
+                Console.WriteLine("\t2 - Box.");
+                Console.WriteLine("\t3 - Box, inner word and paper orientation.");
+                Console.WriteLine("\t4 - Create PDF with long text.");
+                Console.WriteLine("\t5 - Report layout.");
+                Console.WriteLine("\t6 - Online samples.");
+                Console.WriteLine("\t0 - Exit\r\n");
                 Console.Write("Choose a option: ");
                 String op = Console.ReadLine();
                 Console.WriteLine();
 
+                String fullFilePath = String.Empty;
+
                 switch (op)
                 {
                     case "1":
-                        CreateTestPDF();
+                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "hello-world-example.pdf");
+                        CreateTestPDF(fullFilePath);
                         break;
 
                     case "2":
-                        CreateBox();
+                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "box-example.pdf");
+                        CreateBox(fullFilePath);
                         break;
 
                     case "3":
-                        CreateTestSizePagePDF();
+                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "page-example.pdf");
+                        CreateTestSizePagePDF(fullFilePath);
                         break;
 
                     case "4":
-                        CreatePDFWithLongText();
+                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "pages-example.pdf");
+                        CreatePDFWithLongText(fullFilePath);
                         break;
 
                     case "5":
-                        ReportLayout();
+                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "report-layout-example.pdf");
+                        ReportLayout(fullFilePath);
                         break;
 
                     case "6":
@@ -71,7 +87,34 @@ namespace MCHomem.Poc.PdfSharp
             }
         }
 
-        private static void CreateTestPDF()
+        public static String GetDirPath()
+        {
+            try
+            {
+                String path = @"c:\Temp";
+
+                if (ConfigurationManager.AppSettings["DIR_PATH"] != null)
+                {
+                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["DIR_PATH"]))
+                    {
+                        path = ConfigurationManager.AppSettings["DIR_PATH"];
+                    }
+                }
+
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                return path;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private static void CreateTestPDF(String fullFilePath)
         {
             try
             {
@@ -82,9 +125,8 @@ namespace MCHomem.Poc.PdfSharp
                 XFont font = new XFont("Verdana", 20, XFontStyle.Bold);
                 gfx.DrawString("Hello, World!", font, XBrushes.Black, new XRect(0, 0, page.Width, page.Height), XStringFormats.Center);
 
-                String fileName = @"D:\Test.pdf";
-                pdf.Save(fileName);
-                Process.Start(String.Format("file:///{0}", fileName));
+                pdf.Save(fullFilePath);
+                Process.Start(String.Format("file:///{0}", fullFilePath));
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -93,7 +135,7 @@ namespace MCHomem.Poc.PdfSharp
             }
         }
 
-        private static void CreateBox()
+        private static void CreateBox(String fullFilePath)
         {
             try
             {
@@ -105,9 +147,8 @@ namespace MCHomem.Poc.PdfSharp
                 XRect rectangle = new XRect(20, 20, page.Width - 50, page.Height - 50);
                 gfx.DrawRectangle(pen, rectangle);
 
-                String fileName = @"D:\Test.pdf";
-                pdf.Save(fileName);
-                Process.Start(String.Format("file:///{0}", fileName));
+                pdf.Save(fullFilePath);
+                Process.Start(String.Format("file:///{0}", fullFilePath));
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -116,7 +157,7 @@ namespace MCHomem.Poc.PdfSharp
             }
         }
 
-        private static void CreateTestSizePagePDF()
+        private static void CreateTestSizePagePDF(String fullFilePath)
         {
             try
             {
@@ -133,9 +174,8 @@ namespace MCHomem.Poc.PdfSharp
                 XRect rectangle = new XRect(20, 20, page.Width - 50, page.Height - 50);
                 gfx.DrawRectangle(pen, rectangle);
 
-                String fileName = @"D:\Test.pdf";
-                pdf.Save(fileName);
-                Process.Start(String.Format("file:///{0}", fileName));
+                pdf.Save(fullFilePath);
+                Process.Start(String.Format("file:///{0}", fullFilePath));
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -144,7 +184,7 @@ namespace MCHomem.Poc.PdfSharp
             }
         }
 
-        private static void CreatePDFWithLongText()
+        private static void CreatePDFWithLongText(String fullFilePath)
         {
             PdfDocument pdf = new PdfDocument();
 
@@ -195,9 +235,8 @@ namespace MCHomem.Poc.PdfSharp
                 }
             }
 
-            String fileName = @"D:\Test.pdf";
-            pdf.Save(fileName);
-            Process.Start(String.Format("file:///{0}", fileName));
+            pdf.Save(fullFilePath);
+            Process.Start(String.Format("file:///{0}", fullFilePath));
             ShowMessage(MessageType.SUCCESS, "Pdf done!");
         }
 
@@ -214,7 +253,7 @@ namespace MCHomem.Poc.PdfSharp
             }
         }
 
-        private static void ReportLayout()
+        private static void ReportLayout(String fullFilePath)
         {
             try
             {
@@ -275,9 +314,8 @@ namespace MCHomem.Poc.PdfSharp
 
                 #endregion
 
-                String fileName = @"D:\Test.pdf";
-                pdf.Save(fileName);
-                Process.Start(String.Format("file:///{0}", fileName));
+                pdf.Save(fullFilePath);
+                Process.Start(String.Format("file:///{0}", fullFilePath));
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -288,11 +326,11 @@ namespace MCHomem.Poc.PdfSharp
 
         private static void Exit()
         {
-            ShowMessage(MessageType.INFORMATION, "Press a key");
+            ShowMessage(MessageType.INFORMATION, "Press a key to exit.");
             Environment.Exit(0);
         }
 
-        private static void ShowMessage(MessageType messageType, String message)
+        private static void ShowMessage(MessageType messageType, String message, Boolean useReadyKey = true)
         {
             switch (messageType)
             {
@@ -313,8 +351,14 @@ namespace MCHomem.Poc.PdfSharp
             }
             Console.WriteLine(message);
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.ReadKey();
+
+            if(useReadyKey)
+            {
+                Console.ReadKey();
+            }
         }
+
+        #endregion
     }
 
     public enum MessageType
