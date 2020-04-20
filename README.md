@@ -12,7 +12,7 @@ Below is a list of binaries and programs that must be installed:
 1. [Microsoft .net](https://dotnet.microsoft.com/download/dotnet-framework)
 2. [Microsoft Visual Studio](https://visualstudio.microsoft.com/)
 
-## Screenshot
+## Screenshots
 
 1. ![Initial screen](/docs/img/pdfsharp-tests.png)
 
@@ -20,4 +20,4 @@ Below is a list of binaries and programs that must be installed:
 
 ## License
 
-This project is licensed under the GNU GENERAL PUBLIC LICENSE - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU GENERAL PUBLIC LICENSE - see the [LICENSE](LICENSE) file for details
