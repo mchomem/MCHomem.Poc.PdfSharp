@@ -7,7 +7,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-Below, follow the listing of the programs to build and run the project
+Below is a list of binaries and programs that must be installed:
 
 1. [Microsoft .net](https://dotnet.microsoft.com/download/dotnet-framework)
 2. [Microsoft Visual Studio](https://visualstudio.microsoft.com/)
