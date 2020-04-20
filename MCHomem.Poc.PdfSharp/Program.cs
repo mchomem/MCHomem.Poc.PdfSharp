@@ -5,13 +5,50 @@ using PdfSharp.Pdf;
 using System;
 using System.Configuration;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 
 namespace MCHomem.Poc.PdfSharp
 {
     class Program
     {
+        public static String LogFilesDirPath
+        {
+            get
+            {
+                String defaultAppKey = "LOG_FILES_DIR_PATH";
+                String path = @"c:\PdfShartpTests\Logs";
+
+                if (ConfigurationManager.AppSettings[defaultAppKey] != null)
+                {
+                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings[defaultAppKey]))
+                    {
+                        path = ConfigurationManager.AppSettings[defaultAppKey];
+                    }
+                }
+
+                return path;
+            }
+        }
+
+        public static String SampleFilesDirPath
+        {
+            get
+            {
+                String defaultAppKey = "SAMPLE_FILES_DIR_PATH";
+                String path = @"c:\PdfShartpTests\Samples";
+
+                if (ConfigurationManager.AppSettings[defaultAppKey] != null)
+                {
+                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings[defaultAppKey]))
+                    {
+                        path = ConfigurationManager.AppSettings[defaultAppKey];
+                    }
+                }
+
+                return path;
+            }
+        }
+
         #region Main method
 
         static void Main(string[] args)
@@ -48,27 +85,27 @@ namespace MCHomem.Poc.PdfSharp
                 switch (op)
                 {
                     case "1":
-                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "hello-world-example.pdf");
-                        CreateTestPDF(fullFilePath);
+                        fullFilePath = String.Format(@"{0}\{1}", FileDirectoryHelper.GetDirPath(SampleFilesDirPath), "hello-world-example.pdf");
+                        CreateHelloWorldPDF(fullFilePath);
                         break;
 
                     case "2":
-                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "box-example.pdf");
+                        fullFilePath = String.Format(@"{0}\{1}", FileDirectoryHelper.GetDirPath(SampleFilesDirPath), "box-example.pdf");
                         CreateBox(fullFilePath);
                         break;
 
                     case "3":
-                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "page-example.pdf");
-                        CreateTestSizePagePDF(fullFilePath);
+                        fullFilePath = String.Format(@"{0}\{1}", FileDirectoryHelper.GetDirPath(SampleFilesDirPath), "page-example.pdf");
+                        CreatePagePDF(fullFilePath);
                         break;
 
                     case "4":
-                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "pages-example.pdf");
-                        CreatePDFWithLongText(fullFilePath);
+                        fullFilePath = String.Format(@"{0}\{1}", FileDirectoryHelper.GetDirPath(SampleFilesDirPath), "pages-example.pdf");
+                        CreatePagesPDF(fullFilePath);
                         break;
 
                     case "5":
-                        fullFilePath = String.Format(@"{0}\{1}", GetDirPath(), "report-layout-example.pdf");
+                        fullFilePath = String.Format(@"{0}\{1}", FileDirectoryHelper.GetDirPath(SampleFilesDirPath), "report-layout-example.pdf");
                         ReportLayout(fullFilePath);
                         break;
 
@@ -87,34 +124,7 @@ namespace MCHomem.Poc.PdfSharp
             }
         }
 
-        public static String GetDirPath()
-        {
-            try
-            {
-                String path = @"c:\Temp";
-
-                if (ConfigurationManager.AppSettings["DIR_PATH"] != null)
-                {
-                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["DIR_PATH"]))
-                    {
-                        path = ConfigurationManager.AppSettings["DIR_PATH"];
-                    }
-                }
-
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-
-                return path;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        private static void CreateTestPDF(String fullFilePath)
+        private static void CreateHelloWorldPDF(String fullFilePath)
         {
             try
             {
@@ -132,6 +142,7 @@ namespace MCHomem.Poc.PdfSharp
             catch (Exception e)
             {
                 ShowMessage(MessageType.ERROR, String.Format("Error!\r\nMessage {0}", e.Message));
+                CreateLogError(e);
             }
         }
 
@@ -154,10 +165,11 @@ namespace MCHomem.Poc.PdfSharp
             catch (Exception e)
             {
                 ShowMessage(MessageType.ERROR, String.Format("Error!\r\nMessage {0}", e.Message));
+                CreateLogError(e);
             }
         }
 
-        private static void CreateTestSizePagePDF(String fullFilePath)
+        private static void CreatePagePDF(String fullFilePath)
         {
             try
             {
@@ -181,75 +193,70 @@ namespace MCHomem.Poc.PdfSharp
             catch (Exception e)
             {
                 ShowMessage(MessageType.ERROR, String.Format("Error!\r\nMessage {0}", e.Message));
+                CreateLogError(e);
             }
         }
 
-        private static void CreatePDFWithLongText(String fullFilePath)
-        {
-            PdfDocument pdf = new PdfDocument();
-
-            StringBuilder longText = new StringBuilder();
-            Random r = new Random();
-            Int32 insertSpace = 0;
-            Int32 maxCharacters = 200000;
-            Int32 maxCharactersPerPage = 5000;
-
-            for (int i = 0, count = 0; i < maxCharacters; i++, count++)
-            {
-                insertSpace++;
-
-                Char c = Convert.ToChar(r.Next(127));
-
-                if (char.IsLetter(c) || char.IsNumber(c))
-                {
-                    if (insertSpace.Equals(10))
-                    {
-                        longText.Append(" ");
-                        insertSpace = 0;
-                    }
-                    else
-                    {
-                        longText.Append(c.ToString());
-                    }
-                }
-                else
-                {
-                    // In this point the "c" char is not a letter or number, but insertSpace is higher 10, then receive zero.
-                    if (insertSpace > 10)
-                        insertSpace = 0;
-                    i--;
-                }
-
-                if (count > maxCharactersPerPage)
-                {
-                    PdfPage page = pdf.AddPage();
-                    XGraphics gfx = XGraphics.FromPdfPage(page);
-                    XTextFormatter tf = new XTextFormatter(gfx);
-                    tf.Alignment = XParagraphAlignment.Justify;
-                    XRect rect = new XRect(20, 20, page.Width - 50, page.Height - 50);
-                    gfx.DrawRectangle(XBrushes.White, rect);
-                    XFont font = new XFont("Verdana", 12, XFontStyle.Regular);
-                    tf.DrawString(longText.ToString(), font, XBrushes.Black, rect);
-                    longText.Clear();
-                    count = 0;
-                }
-            }
-
-            pdf.Save(fullFilePath);
-            Process.Start(String.Format("file:///{0}", fullFilePath));
-            ShowMessage(MessageType.SUCCESS, "Pdf done!");
-        }
-
-        private static void OpenOnlineSamples()
+        private static void CreatePagesPDF(String fullFilePath)
         {
             try
             {
-                Process.Start("http://www.pdfsharp.net/wiki/PDFsharpSamples.ashx");
-                ShowMessage(MessageType.SUCCESS, "Done.");
+                PdfDocument pdf = new PdfDocument();
+                StringBuilder longText = new StringBuilder();
+                Random r = new Random();
+                Int32 insertSpace = 0;
+                Int32 maxCharacters = 200000;
+                Int32 maxCharactersPerPage = 5000;
+
+                for (int i = 0, count = 0; i < maxCharacters; i++, count++)
+                {
+                    insertSpace++;
+
+                    Char c = Convert.ToChar(r.Next(127));
+
+                    if (char.IsLetter(c) || char.IsNumber(c))
+                    {
+                        if (insertSpace.Equals(10))
+                        {
+                            longText.Append(" ");
+                            insertSpace = 0;
+                        }
+                        else
+                        {
+                            longText.Append(c.ToString());
+                        }
+                    }
+                    else
+                    {
+                        // In this point the "c" char is not a letter or number, but insertSpace is higher 10, then receive zero.
+                        if (insertSpace > 10)
+                            insertSpace = 0;
+                        i--;
+                    }
+
+                    if (count > maxCharactersPerPage)
+                    {
+                        PdfPage page = pdf.AddPage();
+                        XGraphics gfx = XGraphics.FromPdfPage(page);
+                        XTextFormatter tf = new XTextFormatter(gfx);
+                        tf.Alignment = XParagraphAlignment.Justify;
+                        XRect rect = new XRect(20, 20, page.Width - 50, page.Height - 50);
+                        gfx.DrawRectangle(XBrushes.White, rect);
+                        XFont font = new XFont("Verdana", 12, XFontStyle.Regular);
+                        tf.DrawString(longText.ToString(), font, XBrushes.Black, rect);
+                        longText.Clear();
+                        count = 0;
+                    }
+                }
+
+                pdf.Save(fullFilePath);
+                Process.Start(String.Format("file:///{0}", fullFilePath));
+                ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
             {
                 ShowMessage(MessageType.ERROR, String.Format("Error!\r\nMessage {0}", e.Message));
+                CreateLogError(e);
             }
         }
 
@@ -321,6 +328,7 @@ namespace MCHomem.Poc.PdfSharp
             catch (Exception e)
             {
                 ShowMessage(MessageType.ERROR, String.Format("Error!\r\nMessage {0}", e.Message));
+                CreateLogError(e);
             }
         }
 
@@ -352,10 +360,32 @@ namespace MCHomem.Poc.PdfSharp
             Console.WriteLine(message);
             Console.ForegroundColor = ConsoleColor.Gray;
 
-            if(useReadyKey)
+            if (useReadyKey)
             {
                 Console.ReadKey();
             }
+        }
+
+        private static void OpenOnlineSamples()
+        {
+            try
+            {
+                Process.Start("http://www.pdfsharp.net/wiki/PDFsharpSamples.ashx");
+                ShowMessage(MessageType.SUCCESS, "Done.");
+            }
+            catch (Exception e)
+            {
+                ShowMessage(MessageType.ERROR, String.Format("Error!\r\nMessage {0}", e.Message));
+            }
+        }
+
+        private static void CreateLogError(Exception e)
+        {
+            FileDirectoryHelper.CreateFile
+                    (
+                        String.Format("Message: {0}\r\nStacktrace: {1}\r\n", e.Message, e.StackTrace)
+                        , String.Format(@"{0}\{1}", FileDirectoryHelper.GetDirPath(LogFilesDirPath), String.Format("Error_{0}.log", DateTime.Now.ToString("ddMMyyyy.HHmmss")))
+                    );
         }
 
         #endregion
