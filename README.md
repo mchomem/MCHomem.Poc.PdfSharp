@@ -14,9 +14,13 @@ Below is a list of binaries and programs that must be installed:
 
 ## Screenshots
 
-1. ![Initial screen](/docs/img/pdfsharp-tests.png)
+1. Initial screen
 
-2. ![Result of hello world](/docs/img/hello-world-example.png)
+![Initial screen](/docs/img/pdfsharp-tests.png)
+
+2. Result of hello world (Option 1 from menu)
+
+![Result of hello world](/docs/img/hello-world-example.png)
 
 ## License
 
