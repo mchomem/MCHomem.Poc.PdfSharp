@@ -9,7 +9,6 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-```
 1. [Microsoft .net](https://dotnet.microsoft.com/download/dotnet-framework)
 2. [Microsoft Visual Studio](https://visualstudio.microsoft.com/)
-```
+
