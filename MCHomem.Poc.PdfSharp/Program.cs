@@ -106,7 +106,7 @@ namespace MCHomem.Poc.PdfSharp
 
                     case "5":
                         fullFilePath = String.Format(@"{0}\{1}", FileDirectoryHelper.GetDirPath(SampleFilesDirPath), "report-layout-example.pdf");
-                        ReportLayout(fullFilePath);
+                        CreateReportLayout(fullFilePath);
                         break;
 
                     case "6":
@@ -256,7 +256,7 @@ namespace MCHomem.Poc.PdfSharp
             }
         }
 
-        private static void ReportLayout(String fullFilePath)
+        private static void CreateReportLayout(String fullFilePath)
         {
             try
             {
