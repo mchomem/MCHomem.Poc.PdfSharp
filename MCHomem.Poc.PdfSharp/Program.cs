@@ -135,8 +135,7 @@ namespace MCHomem.Poc.PdfSharp
                 XFont font = new XFont("Verdana", 20, XFontStyle.Bold);
                 gfx.DrawString("Hello, World!", font, XBrushes.Black, new XRect(0, 0, page.Width, page.Height), XStringFormats.Center);
 
-                pdf.Save(fullFilePath);
-                Process.Start(String.Format("file:///{0}", fullFilePath));
+                SaveAndOpen(pdf, fullFilePath);
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -158,8 +157,7 @@ namespace MCHomem.Poc.PdfSharp
                 XRect rectangle = new XRect(20, 20, page.Width - 50, page.Height - 50);
                 gfx.DrawRectangle(pen, rectangle);
 
-                pdf.Save(fullFilePath);
-                Process.Start(String.Format("file:///{0}", fullFilePath));
+                SaveAndOpen(pdf, fullFilePath);
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -186,8 +184,7 @@ namespace MCHomem.Poc.PdfSharp
                 XRect rectangle = new XRect(20, 20, page.Width - 50, page.Height - 50);
                 gfx.DrawRectangle(pen, rectangle);
 
-                pdf.Save(fullFilePath);
-                Process.Start(String.Format("file:///{0}", fullFilePath));
+                SaveAndOpen(pdf, fullFilePath);
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -249,8 +246,7 @@ namespace MCHomem.Poc.PdfSharp
                     }
                 }
 
-                pdf.Save(fullFilePath);
-                Process.Start(String.Format("file:///{0}", fullFilePath));
+                SaveAndOpen(pdf, fullFilePath);
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -320,9 +316,8 @@ namespace MCHomem.Poc.PdfSharp
                 gfx.DrawRectangle(penFooter, rectBorderFooter);
 
                 #endregion
-
-                pdf.Save(fullFilePath);
-                Process.Start(String.Format("file:///{0}", fullFilePath));
+                
+                SaveAndOpen(pdf, fullFilePath);
                 ShowMessage(MessageType.SUCCESS, "Pdf done!");
             }
             catch (Exception e)
@@ -330,6 +325,12 @@ namespace MCHomem.Poc.PdfSharp
                 ShowMessage(MessageType.ERROR, String.Format("Error!\r\nMessage {0}", e.Message));
                 CreateLogError(e);
             }
+        }
+
+        private static void SaveAndOpen(PdfDocument pdf, String fullFilePath)
+        {
+            pdf.Save(fullFilePath);
+            Process.Start(String.Format("file:///{0}", fullFilePath));
         }
 
         private static void Exit()
